@@ -35,7 +35,10 @@ export class Assignment extends Scene {
             //        (Requirement 4)
 
             sphere: new Material(new defs.Phong_Shader(),
-                {ambient: 1, diffusivity: .6, color: hex_color("#ffffff")}),
+                {ambient: 1, diffusivity: 1, color: hex_color("#ffa500")}),
+
+            sphere2: new Material(new defs.Phong_Shader(),
+                {ambient: 1, diffusivity: 1, color: hex_color("#ADD8E6")}),
             
             matp1: new Material(new defs.Phong_Shader(),
                 {ambient:1, diffusivity: 1, color: hex_color("#808080")}), //from https://www.canva.com/colors/color-meanings/gray/
@@ -173,6 +176,41 @@ export class Assignment extends Scene {
 
          this.shapes.torus.draw(context, program_state, ringsmatrix6, this.materials.ring2);
          this.shapes.torus.draw(context, program_state, ringsmatrix7, this.materials.ring);
+
+         
+         for(let i=0; i<100; i++){
+         let sparkmatrix=Mat4.identity();
+         //sparkmatrix=sparkmatrix.times(Mat4.rotation(0.2*t, -1, 0, 0)).times(Mat4.translation(3*t*Math.cos(0.1*i*Math.PI), i*Math.sin(0.1*i*Math.PI) ,3)).times(Mat4.rotation(0.2*t, -1, 0, 0)).times(Mat4.scale(0.1,0.1,0.1));
+         sparkmatrix=sparkmatrix.times(Mat4.translation(15*Math.cos(0.1*i*Math.PI), i*Math.sin(0.1*i*Math.PI) ,20)).times(Mat4.scale(0.1,0.1,0.1));
+         if(Math.floor(3*t)%2==0){
+         this.shapes.sphere.draw(context,program_state,sparkmatrix,this.materials.sphere);}
+         else{
+         this.shapes.sphere.draw(context,program_state,sparkmatrix,this.materials.sphere2);
+         }
+         }
+
+         for(let i=0; i<100; i++){
+         let sparkmatrix=Mat4.identity();
+         //sparkmatrix=sparkmatrix.times(Mat4.rotation(0.2*t, -1, 0, 0)).times(Mat4.translation(3*t*Math.cos(0.1*i*Math.PI), i*Math.sin(0.1*i*Math.PI) ,3)).times(Mat4.rotation(0.2*t, -1, 0, 0)).times(Mat4.scale(0.1,0.1,0.1));
+         sparkmatrix=sparkmatrix.times(Mat4.translation(18, i*Math.sin(0.1*i*Math.PI) ,20*Math.cos(0.1*i*Math.PI))).times(Mat4.scale(0.1,0.1,0.1));
+         if(Math.floor(3*t)%2==0){
+         this.shapes.sphere.draw(context,program_state,sparkmatrix,this.materials.sphere);}
+         else{
+         this.shapes.sphere.draw(context,program_state,sparkmatrix,this.materials.sphere2);
+         }
+         }
+
+         for(let i=0; i<100; i++){
+         let sparkmatrix=Mat4.identity();
+         //sparkmatrix=sparkmatrix.times(Mat4.rotation(0.2*t, -1, 0, 0)).times(Mat4.translation(3*t*Math.cos(0.1*i*Math.PI), i*Math.sin(0.1*i*Math.PI) ,3)).times(Mat4.rotation(0.2*t, -1, 0, 0)).times(Mat4.scale(0.1,0.1,0.1));
+         sparkmatrix=sparkmatrix.times(Mat4.translation(-18, i*Math.sin(0.1*i*Math.PI) ,20*Math.cos(0.1*i*Math.PI))).times(Mat4.scale(0.1,0.1,0.1));
+         if(Math.floor(3*t)%2==0){
+         this.shapes.sphere.draw(context,program_state,sparkmatrix,this.materials.sphere);}
+         else{
+         this.shapes.sphere.draw(context,program_state,sparkmatrix,this.materials.sphere2);
+         }
+         }
+
 
         
         if(this.attached != undefined)
@@ -397,3 +435,4 @@ class Ring_Shader extends Shader {
         }`;
     }
 }
+
