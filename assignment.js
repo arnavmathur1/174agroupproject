@@ -120,7 +120,7 @@ export class Assignment extends Scene {
         var sunscaler = 2 + Math.sin((1/5 * Math.PI * t));
 
         sunmatrix = sunmatrix.times(Mat4.scale(sunscaler, sunscaler, sunscaler));
-        
+         
 
 
        
@@ -132,7 +132,7 @@ export class Assignment extends Scene {
 
 
         
-         ringsmatrix0 = ringsmatrix0.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.scale(1.2,1.2,0.0001))
+         ringsmatrix0 = ringsmatrix0.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.translation(0, 0 ,0))
         //ringsmatrix1 = ringsmatrix1.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(t/3, 0, 0, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.scale(1.7,1.7,0.0001))
         //ringsmatrix2 = ringsmatrix2.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(t/3, 0, 0, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.scale(2.2,2.2,0.0001))
         ringsmatrix3 = ringsmatrix3.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(2*t, 0, 0, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.rotation(0.3*Math.sin(5 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(2.7,2.7,0.0001))
