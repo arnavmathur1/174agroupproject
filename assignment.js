@@ -132,11 +132,11 @@ export class Assignment extends Scene {
 
 
         
-        //ringsmatrix0 = ringsmatrix0.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(t/3, 0, 0, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.scale(1.2,1.2,0.0001))
+         ringsmatrix0 = ringsmatrix0.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.scale(1.2,1.2,0.0001))
         //ringsmatrix1 = ringsmatrix1.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(t/3, 0, 0, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.scale(1.7,1.7,0.0001))
         //ringsmatrix2 = ringsmatrix2.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(t/3, 0, 0, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.scale(2.2,2.2,0.0001))
-        ringsmatrix3 = ringsmatrix3.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(t/3, 0, 0, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.scale(2.7,2.7,0.0001))
-        
+        ringsmatrix3 = ringsmatrix3.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(2*t, 0, 0, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.rotation(0.3*Math.sin(5 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(2.7,2.7,0.0001))
+
         
       
           
@@ -161,10 +161,10 @@ export class Assignment extends Scene {
 
 //         this.shapes.sphere.draw(context, program_state, p3matrix, this.materials.matp3);
 
-         this.shapes.torus.draw(context, program_state, ringsmatrix0, this.materials.ring);
-         this.shapes.torus2.draw(context, program_state, ringsmatrix1, this.materials.ring2);
-         this.shapes.torus.draw(context, program_state, ringsmatrix2, this.materials.matp4);
-         this.shapes.torus.draw(context, program_state, ringsmatrix3, this.materials.matp1);
+         this.shapes.torus.draw(context, program_state, ringsmatrix0, this.materials.ring2);
+         //this.shapes.torus2.draw(context, program_state, ringsmatrix1, this.materials.ring2);
+         //this.shapes.torus.draw(context, program_state, ringsmatrix2, this.materials.matp4);
+         this.shapes.torus.draw(context, program_state, ringsmatrix3, this.materials.ring);
 
         
         if(this.attached != undefined)
@@ -270,6 +270,7 @@ class Gouraud_Shader extends Shader {
                 // Compute an initial (ambient) color:
                 
                 gl_FragColor = vc;
+                //gl_FragColor = hex_color("#b08040");
                 // Compute the final color with contributions from lights:
                 gl_FragColor.xyz += phong_model_lights( normalize( N ), vertex_worldspace );
             } `;
@@ -381,7 +382,9 @@ class Ring_Shader extends Shader {
         return this.shared_glsl_code() + `
         void main(){
 
-          gl_FragColor= vec4(0.75,0.5,0.25,sin(distance(center,point_position)*55.0) + 0.5);
+          //gl_FragColor= vec4(0.75,0.5,0.25,sin(distance(center,point_position)*55.0) + 0.5); OLD FRAG COLOR
+
+          gl_FragColor = vec4(sin(distance(center,point_position)*55.0) + 0.5,sin(distance(center,point_position)*55.0) + 0.5,0.25,sin(distance(center,point_position)*20.0) + 0.5);
           
         }`;
     }
