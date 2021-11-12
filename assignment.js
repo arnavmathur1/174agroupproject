@@ -29,8 +29,8 @@ export class Assignment extends Scene {
                 {ambient: .4, diffusivity: .6, color: hex_color("#ffffff")}),
             test2: new Material(new Gouraud_Shader(),
                 {ambient: .4, diffusivity: .6, color: hex_color("#992828")}),
-            ring: new Material(new Ring_Shader(), {ambient:1, diffusivity: 1, color: hex_color("#b08040"), specularity:1}),
-            ring2: new Material(new Ring_Shader(), {ambient:1, diffusivity: 1, color: hex_color("#c7e4ee"), specularity:1}),
+            ring: new Material(new Ring_Shader(), {ambient:1, diffusivity: 1, color: hex_color("#f000ff"), specularity:1}),
+            ring2: new Material(new Ring_Shader(), {ambient:1, diffusivity: 1, color: hex_color("#f000ff"), specularity:1}),
             // TODO:  Fill in as many additional material objects as needed in this key/value table.
             //        (Requirement 4)
 
@@ -132,10 +132,10 @@ export class Assignment extends Scene {
 
 
         
-         ringsmatrix0 = ringsmatrix0.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.translation(0, 0 ,0))
+         ringsmatrix0 = ringsmatrix0.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.translation(0, 0 , 3))
         //ringsmatrix1 = ringsmatrix1.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(t/3, 0, 0, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.scale(1.7,1.7,0.0001))
         //ringsmatrix2 = ringsmatrix2.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(t/3, 0, 0, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.scale(2.2,2.2,0.0001))
-        ringsmatrix3 = ringsmatrix3.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(2*t, 0, 0, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.rotation(0.3*Math.sin(5 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(2.7,2.7,0.0001))
+        ringsmatrix3 = ringsmatrix3.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(2*t, 0, 0, 1)).times(Mat4.translation(0, 0 ,3)).times(Mat4.rotation(0.3*Math.sin(5 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(4.5,4.5,0.0001))
 
         
       
@@ -384,7 +384,7 @@ class Ring_Shader extends Shader {
 
           //gl_FragColor= vec4(0.75,0.5,0.25,sin(distance(center,point_position)*55.0) + 0.5); OLD FRAG COLOR
 
-          gl_FragColor = vec4(sin(distance(center,point_position)*55.0) + 0.5,sin(distance(center,point_position)*55.0) + 0.5,0.25,sin(distance(center,point_position)*20.0) + 0.5);
+          gl_FragColor = vec4(sin(distance(center,point_position)*48.0) + 0.5,sin(distance(center,point_position)*35.0) + 0.5,0.7,sin(distance(center,point_position)*20.0) + 0.5);
           
         }`;
     }
