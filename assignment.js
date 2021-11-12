@@ -125,22 +125,24 @@ export class Assignment extends Scene {
 
        
 
-        p3matrix = p3matrix.times(Mat4.rotation(t/3, 0, 1, 0)).times(Mat4.translation(0, 0 ,0))
+        p3matrix = p3matrix.times(Mat4.rotation(t/3, 0, 1, 0)).times(Mat4.translation(0, 0 ,0));
         //this.planet_3 = p3matrix
         this.planet_3 = Mat4.inverse(p3matrix.times(Mat4.translation(0, 0, 5)));
                  
 
 
         
-         ringsmatrix0 = ringsmatrix0.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.translation(0, 0 , 3))
+         ringsmatrix0 = ringsmatrix0.times(Mat4.translation(0, 0 , 3));
         //ringsmatrix1 = ringsmatrix1.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(t/3, 0, 0, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.scale(1.7,1.7,0.0001))
         //ringsmatrix2 = ringsmatrix2.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(t/3, 0, 0, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.scale(2.2,2.2,0.0001))
-        ringsmatrix3 = ringsmatrix3.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(2*t, 0, 0, 1)).times(Mat4.translation(0, 0 ,3)).times(Mat4.rotation(0.3*Math.sin(5 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(4.5,4.5,0.0001))
+        ringsmatrix3 = ringsmatrix3.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(2*t, 0, 0, 1)).times(Mat4.translation(0, 0 ,3)).times(Mat4.rotation(0.2*Math.sin(10 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(4.5,4.5,0.0001));
 
         
-      
+        let ringsmatrix4 = ringsmatrix0.times(Mat4.translation(13, 0, 0)).times(Mat4.rotation(6*t, 0, 0, 1)).times(Mat4.translation(2, 0, 0));
+        let ringsmatrix5 = ringsmatrix0.times(Mat4.translation(13, 0, 0)).times(Mat4.rotation(6*t, 0, 0, 1)).times(Mat4.translation(2, 0 , 0)).times(Mat4.rotation(0.1*Math.sin(7 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(2,2,0.0001));
           
-
+        let ringsmatrix6 = ringsmatrix0.times(Mat4.translation(-13, 0, 0)).times(Mat4.rotation(6*t, 0, 0, -1)).times(Mat4.translation(2, 0, 0));
+        let ringsmatrix7 = ringsmatrix0.times(Mat4.translation(-13, 0, 0)).times(Mat4.rotation(6*t, 0, 0, -1)).times(Mat4.translation(2, 0 , 0)).times(Mat4.rotation(0.1*Math.sin(7 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(2,2,0.0001));
 
 
         // TODO: Lighting (Requirement 2)
@@ -165,6 +167,12 @@ export class Assignment extends Scene {
          //this.shapes.torus2.draw(context, program_state, ringsmatrix1, this.materials.ring2);
          //this.shapes.torus.draw(context, program_state, ringsmatrix2, this.materials.matp4);
          this.shapes.torus.draw(context, program_state, ringsmatrix3, this.materials.ring);
+
+         this.shapes.torus.draw(context, program_state, ringsmatrix4, this.materials.ring2);
+         this.shapes.torus.draw(context, program_state, ringsmatrix5, this.materials.ring);
+
+         this.shapes.torus.draw(context, program_state, ringsmatrix6, this.materials.ring2);
+         this.shapes.torus.draw(context, program_state, ringsmatrix7, this.materials.ring);
 
         
         if(this.attached != undefined)
@@ -389,4 +397,3 @@ class Ring_Shader extends Shader {
         }`;
     }
 }
-
