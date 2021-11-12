@@ -4,15 +4,15 @@ const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
 } = tiny;
 
-export class Assignment3 extends Scene {
+export class Assignment extends Scene {
     constructor() {
         // constructor(): Scenes begin by populating initial values like the Shapes and Materials they'll need.
         super();
 
         // At the beginning of our program, load one of each of these shape definitions onto the GPU.
         this.shapes = {
-            torus: new defs.Torus(15, 15),
-            torus2: new defs.Torus(3, 15),
+            torus: new defs.Torus(70, 20),
+            torus2: new defs.Torus(3, 150),
             sphere: new defs.Subdivision_Sphere(4),
             circle: new defs.Regular_2D_Polygon(1, 15),
             planet_1: new (defs.Subdivision_Sphere.prototype.make_flat_shaded_version()) (2),
@@ -29,7 +29,8 @@ export class Assignment3 extends Scene {
                 {ambient: .4, diffusivity: .6, color: hex_color("#ffffff")}),
             test2: new Material(new Gouraud_Shader(),
                 {ambient: .4, diffusivity: .6, color: hex_color("#992828")}),
-            ring: new Material(new Ring_Shader(), {ambient:0, diffusivity: 1, color: hex_color("#b08040"), specularity:1}),
+            ring: new Material(new Ring_Shader(), {ambient:1, diffusivity: 1, color: hex_color("#b08040"), specularity:1}),
+            ring2: new Material(new Ring_Shader(), {ambient:1, diffusivity: 1, color: hex_color("#c7e4ee"), specularity:1}),
             // TODO:  Fill in as many additional material objects as needed in this key/value table.
             //        (Requirement 4)
 
@@ -37,24 +38,24 @@ export class Assignment3 extends Scene {
                 {ambient: 1, diffusivity: .6, color: hex_color("#ffffff")}),
             
             matp1: new Material(new defs.Phong_Shader(),
-                {diffusivity: 1, color: hex_color("#808080")}), //from https://www.canva.com/colors/color-meanings/gray/
+                {ambient:1, diffusivity: 1, color: hex_color("#808080")}), //from https://www.canva.com/colors/color-meanings/gray/
 
              
             matp21: new Material(new Gouraud_Shader(),
                 {diffusivity: .1, color: hex_color("#80ffff"), specularity:1}),
             
             matp22: new Material(new defs.Phong_Shader(),
-                {diffusivity: .1, color: hex_color("#80ffff"), specularity:1}),
+                {ambient:1, diffusivity: .1, color: hex_color("#80ffff"), specularity:1}),
 
             matp3: new Material(new defs.Phong_Shader(),
-                { diffusivity: 1, color: hex_color("#b08040"), specularity:1}),
+                {ambient:1, diffusivity: 1, color: hex_color("#b08040"), specularity:1}),
 
             matp4: new Material(new defs.Phong_Shader(),
-                {color: hex_color("#c7e4ee"), specularity:1}), //from https://www.color-name.com/soft-light-blue.color
+                {ambient:1,color: hex_color("#c7e4ee"), specularity:1}), //from https://www.color-name.com/soft-light-blue.color
             
         } 
 
-        this.initial_camera_location = Mat4.look_at(vec3(0, 10, 20), vec3(0, 0, 0), vec3(0, 1, 0));
+        this.initial_camera_location = Mat4.look_at(vec3(0,-25,10), vec3(0, 10, 7), vec3(0, 1, 1));
     }
 
     make_control_panel() {
@@ -88,14 +89,17 @@ export class Assignment3 extends Scene {
         let p1matrix = Mat4.identity();
         let p2matrix = Mat4.identity();
         let p3matrix = Mat4.identity();
-        let ringsmatrix = Mat4.identity();
+        let ringsmatrix0 = Mat4.identity();
+        let ringsmatrix1 = Mat4.identity();
+        let ringsmatrix2 = Mat4.identity();
+        let ringsmatrix3 = Mat4.identity();
+
         let p4matrix = Mat4.identity();
         let moonmatrix = Mat4.identity();
 
 
 
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
-        //console.log(Math.round(t)%2)
 
         var mod = 0
         if (Math.round(t)%2 == 0)
@@ -119,41 +123,24 @@ export class Assignment3 extends Scene {
         
 
 
-        p1matrix = p1matrix.times(Mat4.rotation(t, 0, 1, 0)).times(Mat4.translation(5, 0 ,0))
-        //this.planet_1 = p1matrix;
-        this.planet_1 = Mat4.inverse(p1matrix.times(Mat4.translation(0, 0, 5)));
-                 
-        p2matrix = p2matrix.times(Mat4.rotation(t/2, 0, 1, 0)).times(Mat4.translation(8, 0 ,0))
-        //this.planet_2 = p2matrix;
-        this.planet_2 = Mat4.inverse(p2matrix.times(Mat4.translation(0, 0, 5)));
-                 
+       
 
-        p3matrix = p3matrix.times(Mat4.rotation(t/3, 0, 1, 0)).times(Mat4.translation(11, 0 ,0))
+        p3matrix = p3matrix.times(Mat4.rotation(t/3, 0, 1, 0)).times(Mat4.translation(0, 0 ,0))
         //this.planet_3 = p3matrix
         this.planet_3 = Mat4.inverse(p3matrix.times(Mat4.translation(0, 0, 5)));
                  
 
 
         
-        ringsmatrix = ringsmatrix.times(Mat4.rotation(t/3, 0, 1, 0)).times(Mat4.translation(11, 0 ,0)).times(Mat4.rotation(t/1.5,  1, 1, 1)).times(Mat4.scale(3,3,0.0001))
+        //ringsmatrix0 = ringsmatrix0.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(t/3, 0, 0, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.scale(1.2,1.2,0.0001))
+        //ringsmatrix1 = ringsmatrix1.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(t/3, 0, 0, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.scale(1.7,1.7,0.0001))
+        //ringsmatrix2 = ringsmatrix2.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(t/3, 0, 0, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.scale(2.2,2.2,0.0001))
+        ringsmatrix3 = ringsmatrix3.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(t/3, 0, 0, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.scale(2.7,2.7,0.0001))
         
-        p4matrix = p4matrix.times(Mat4.rotation(t/4, 0, 1, 0)).times(Mat4.translation(14, 0 ,0))
-        //this.planet_1 = p1matrix;
-        this.planet_4 = Mat4.inverse(p4matrix.times(Mat4.translation(0, 0, 5)));
-
-        moonmatrix = p4matrix.times(Mat4.rotation(t/4, 0, 1, 0)).times(Mat4.translation(3, 0 ,0))
-        //this.planet_1 = p1matrix;
-        this.moon = Mat4.inverse(moonmatrix.times(Mat4.translation(0, 0, 5)));
+        
+      
           
-          
-             
 
-        //times(Mat4.translation(5,0,0));
-
-
-
-
-        //this.shapes.sphere.draw(context, program_state, sun_transform, this.materials.sphere.override({color: hex_color("#fac91a")}));
 
 
         // TODO: Lighting (Requirement 2)
@@ -170,42 +157,22 @@ export class Assignment3 extends Scene {
 
         const yellow = hex_color("#fac91a");
         const white = hex_color("#ffffff");
-        //model_transform = Mat4.identity();
-
-        //-0.5 + Math.sin(1/5 * Math.PI * t);
-        this.shapes.planet_1.draw(context, program_state, p1matrix, this.materials.matp1); 
 
 
+//         this.shapes.sphere.draw(context, program_state, p3matrix, this.materials.matp3);
 
+         this.shapes.torus.draw(context, program_state, ringsmatrix0, this.materials.ring);
+         this.shapes.torus2.draw(context, program_state, ringsmatrix1, this.materials.ring2);
+         this.shapes.torus.draw(context, program_state, ringsmatrix2, this.materials.matp4);
+         this.shapes.torus.draw(context, program_state, ringsmatrix3, this.materials.matp1);
 
-        //this.shapes.torus.draw(context, program_state, model_transform, this.materials.test.override({color: yellow}));
-        //this.shapes.sphere.draw(context, program_state, model_transform, this.materials.test.override({color: yellow}));
-
-        this.shapes.sphere.draw(context, program_state, sunmatrix, this.materials.sphere.override({color: color(1,0.5 + 0.5* Math.sin(1/5 * Math.PI * t),0.5 + 0.5* Math.sin(1/5 * Math.PI * t),1)}));
-        
-        
-        if (mod == 0)
-        {
-            this.shapes.planet_2.draw(context, program_state, p2matrix, this.materials.matp22); //22 is phong
-        }
-        else
-        {
-            this.shapes.planet_2.draw(context, program_state, p2matrix, this.materials.matp21);
-        }
-
-
-        this.shapes.sphere.draw(context, program_state, p3matrix, this.materials.matp3);
-
-        this.shapes.torus.draw(context, program_state, ringsmatrix, this.materials.ring);
-
-        this.shapes.sphere.draw(context, program_state, p4matrix, this.materials.matp4);
-        this.shapes.moon.draw(context, program_state, moonmatrix, this.materials.matp4);
         
         if(this.attached != undefined)
         {
 
              program_state.camera_inverse = this.attached().map((x,i) => Vector.from(program_state.camera_inverse[i]).mix(x, 0.1));
         }
+
 
 
     }
