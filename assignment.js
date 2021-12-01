@@ -1,7 +1,7 @@
 import {defs, tiny} from './examples/common.js'; 
 
 const {
-    Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
+    Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene, Texture
 } = tiny;
 
 
@@ -10,7 +10,9 @@ const origin = vec3(0, 0, 0);
 
 let origin_relative = vec3(0, 0, 0);
 
-
+let ihat = vec3(1, 0, 0);
+let khat = vec3(0, 0, 1);
+let z_rot = 0;
 
 
 const wm = class worldmovement extends defs.Movement_Controls
@@ -22,8 +24,7 @@ const wm = class worldmovement extends defs.Movement_Controls
 
   fpv(radians_per_frame, meters_per_frame, leeway=100)
   {
-    let ihat = vec3(1, 0, 0);
-    let khat = vec3(0, 0, 1);
+    
 
     let foo = vec3(NaN, NaN, NaN);
     Object.assign(foo, origin_relative);
@@ -77,10 +78,12 @@ export class Assignment extends Scene {
             planet_1: new (defs.Subdivision_Sphere.prototype.make_flat_shaded_version()) (2),
             planet_2: new defs.Subdivision_Sphere(3),
             moon: new (defs.Subdivision_Sphere.prototype.make_flat_shaded_version()) (1),
+            ground: new defs.Capped_Cylinder(100,100, [[0, 2], [0, 1]]),
             
             // TODO:  Fill in as many additional shape instances as needed in this key/value table.
             //        (Requirement 1)
         };
+        this.shapes.ground.arrays.texture_coord.forEach(f => f.scale_by(60));
 
         // *** Materials
         this.materials = {
@@ -115,6 +118,9 @@ export class Assignment extends Scene {
             matp4: new Material(new defs.Phong_Shader(),
                 {ambient:1,color: hex_color("#c7e4ee"), specularity:1}), //from https://www.color-name.com/soft-light-blue.color
             
+            ground: new Material(new defs.Textured_Phong(1), 
+                {ambient: 1, specularity: 0.3, texture: new Texture("assets/ground2.jpeg")}),
+            
         } 
 
         this.initial_camera_location = Mat4.look_at(vec3(0,-25,10), vec3(0, 10, 7), vec3(0, 1, 1));
@@ -124,6 +130,18 @@ export class Assignment extends Scene {
         // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
         this.key_triggered_button("View solar system", ["Control", "0"], () => this.attached = () => this.initial_camera_location);
         this.new_line();
+    }
+
+    setup_env(context, program_state, model_transform){
+    
+        let ground_t = model_transform.times(Mat4.rotation(z_rot, 0, 1, 0))
+                                      .times(Mat4.translation(...origin))
+                                      .times(Mat4.rotation(Math.PI/2, 1, 0, 0))
+                                      .times(Mat4.translation(0, 0, 2))
+                                      .times(Mat4.scale(60, 60, 0.5));
+        
+        this.shapes.ground.draw(context, program_state, ground_t, this.materials.ground);
+
     }
 
     display(context, program_state) {
@@ -220,12 +238,12 @@ export class Assignment extends Scene {
         
         
         //See if we can angle this up a bit more --HELP
-        cubetransform = cubetransform.times(Mat4.rotation(Math.PI/6,1,0,0)).times(Mat4.translation(0, -7, 0)).times(Mat4.scale(1,1,5))
+        cubetransform = cubetransform.times(Mat4.rotation(Math.PI/6,1,0,0)).times(Mat4.translation(0, 0, 0)).times(Mat4.scale(1,1,5))
 
         this.shapes.sphere.draw(context, program_state, p3matrix, this.materials.matp3);
         this.shapes.cube.draw(context, program_state, cubetransform, this.materials.matp3);
 
-        
+        this.setup_env(context, program_state, Mat4.identity());
 
         
         if(this.attached != undefined)
