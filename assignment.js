@@ -4,6 +4,64 @@ const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
 } = tiny;
 
+
+
+const origin = vec3(0, 0, 0);
+
+let origin_relative = vec3(0, 0, 0);
+
+
+
+
+const wm = class worldmovement extends defs.Movement_Controls
+{
+  constructor()
+  {
+    super();
+  }
+
+  fpv(radians_per_frame, meters_per_frame, leeway=100)
+  {
+    let ihat = vec3(1, 0, 0);
+    let khat = vec3(0, 0, 1);
+
+    let foo = vec3(NaN, NaN, NaN);
+    Object.assign(foo, origin_relative);
+
+    if (this.thrust[0] !== 0) {
+      foo[0] += 1 * this.thrust[0] * ihat[0] * .1;
+      foo[2] += 1 * this.thrust[2] * ihat[2] * .1;
+    }
+    if (this.thrust[2] !== 0) {
+      foo[0] += 1 * this.thrust[2] * khat[0] * .1;
+      foo[2] += 1 * this.thrust[2] * khat[2] * .1;
+    }
+
+    
+    const ppdist = (p, q) => {return Math.sqrt(Math.pow(p[0] - q[0], 2) + Math.pow(p[2] - q[2], 2));};
+    let cur_dist = ppdist(origin_relative, origin);
+    let future_dist = ppdist(foo, origin);
+
+    Object.assign(origin_relative, foo);
+  }
+
+ 
+
+  display(context, graphics_state)
+  {
+
+    if (this.will_take_over_graphics_state)
+    {
+      this.reset(graphics_state);
+      this.will_take_over_graphics_state = false;
+    }
+
+    this.fpv((graphics_state.animation_delta_time / 1000) * this.speed_multiplier * this.radians_per_frame, (graphics_state.animation_delta_time / 1000) * this.speed_multiplier * this.meters_per_frame);
+
+
+  }
+};
+
 export class Assignment extends Scene {
     constructor() {
         // constructor(): Scenes begin by populating initial values like the Shapes and Materials they'll need.
@@ -11,6 +69,7 @@ export class Assignment extends Scene {
 
         // At the beginning of our program, load one of each of these shape definitions onto the GPU.
         this.shapes = {
+            cube: new defs.Cube(),
             torus: new defs.Torus(70, 20),
             torus2: new defs.Torus(3, 150),
             sphere: new defs.Subdivision_Sphere(4),
@@ -71,9 +130,10 @@ export class Assignment extends Scene {
         // display():  Called once per frame of animation.
         // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
         if (!context.scratchpad.controls) {
-            this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
+            this.children.push(context.scratchpad.controls = new wm());
             // Define the global camera and projection matrices, which are stored in program_state.
-            program_state.set_camera(this.initial_camera_location);
+            //program_state.set_camera(this.initial_camera_location);
+            program_state.set_camera(Mat4.look_at(vec3(0, 0, 25), vec3(0, 0, -1), vec3(0, 1, 0)));
         }
 
         program_state.projection_transform = Mat4.perspective(
@@ -82,7 +142,7 @@ export class Assignment extends Scene {
         // TODO: Create Planets (Requirement 1)
         // this.shapes.[XXX].draw([XXX]) // <--example
 
-        let p1matrix = Mat4.identity();
+        let cubetransform = Mat4.identity();
         let p2matrix = Mat4.identity();
         let p3matrix = Mat4.identity();
         let ringsmatrix0 = Mat4.identity();
@@ -121,7 +181,9 @@ export class Assignment extends Scene {
 
        
 
-        p3matrix = p3matrix.times(Mat4.rotation(t/3, 0, 1, 0)).times(Mat4.translation(0, 0 ,0));
+        //p3matrix = p3matrix.times(Mat4.rotation(t/3, 0, 1, 0)).times(Mat4.translation(0, 0 ,0));
+
+        p3matrix = p3matrix.times(Mat4.translation(...origin_relative))
         //this.planet_3 = p3matrix
         this.planet_3 = Mat4.inverse(p3matrix.times(Mat4.translation(0, 0, 5)));
                  
@@ -134,7 +196,7 @@ export class Assignment extends Scene {
         ringsmatrix3 = ringsmatrix3.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(2*t, 0, 0, 1)).times(Mat4.translation(0, 0 ,3)).times(Mat4.rotation(0.2*Math.sin(10 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(4.5,4.5,0.0001));
 
         
-        let ringsmatrix4 = ringsmatrix0.times(Mat4.translation(13, 0, 0)).times(Mat4.rotation(6*t, 0, 0, 1)).times(Mat4.translation(2, 0, 0));
+        let ringsmatrix4 = ringsmatrix0.times(Mat4.rotation(6*t, 0, 0, 1)).times(Mat4.translation(2, 0, 0));
         let ringsmatrix5 = ringsmatrix0.times(Mat4.translation(13, 0, 0)).times(Mat4.rotation(6*t, 0, 0, 1)).times(Mat4.translation(2, 0 , 0)).times(Mat4.rotation(0.1*Math.sin(7 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(2,2,0.0001));
           
         let ringsmatrix6 = ringsmatrix0.times(Mat4.translation(-13, 0, 0)).times(Mat4.rotation(6*t, 0, 0, -1)).times(Mat4.translation(2, 0, 0));
@@ -155,55 +217,15 @@ export class Assignment extends Scene {
 
         const yellow = hex_color("#fac91a");
         const white = hex_color("#ffffff");
+        
+        
+        //See if we can angle this up a bit more --HELP
+        cubetransform = cubetransform.times(Mat4.rotation(Math.PI/6,1,0,0)).times(Mat4.translation(0, -7, 0)).times(Mat4.scale(1,1,5))
 
+        this.shapes.sphere.draw(context, program_state, p3matrix, this.materials.matp3);
+        this.shapes.cube.draw(context, program_state, cubetransform, this.materials.matp3);
 
-//         this.shapes.sphere.draw(context, program_state, p3matrix, this.materials.matp3);
-
-         this.shapes.torus.draw(context, program_state, ringsmatrix0, this.materials.ring2);
-         //this.shapes.torus2.draw(context, program_state, ringsmatrix1, this.materials.ring2);
-         //this.shapes.torus.draw(context, program_state, ringsmatrix2, this.materials.matp4);
-         this.shapes.torus.draw(context, program_state, ringsmatrix3, this.materials.ring);
-
-         this.shapes.torus.draw(context, program_state, ringsmatrix4, this.materials.ring2);
-         this.shapes.torus.draw(context, program_state, ringsmatrix5, this.materials.ring);
-
-         this.shapes.torus.draw(context, program_state, ringsmatrix6, this.materials.ring2);
-         this.shapes.torus.draw(context, program_state, ringsmatrix7, this.materials.ring);
-
-         
-         for(let i=0; i<100; i++){
-         let sparkmatrix=Mat4.identity();
-         //sparkmatrix=sparkmatrix.times(Mat4.rotation(0.2*t, -1, 0, 0)).times(Mat4.translation(3*t*Math.cos(0.1*i*Math.PI), i*Math.sin(0.1*i*Math.PI) ,3)).times(Mat4.rotation(0.2*t, -1, 0, 0)).times(Mat4.scale(0.1,0.1,0.1));
-         sparkmatrix=sparkmatrix.times(Mat4.translation(15*Math.cos(0.1*i*Math.PI), i*Math.sin(0.1*i*Math.PI) ,20)).times(Mat4.scale(0.1,0.1,0.1));
-         if(Math.floor(3*t)%2==0){
-         this.shapes.sphere.draw(context,program_state,sparkmatrix,this.materials.sphere);}
-         else{
-         this.shapes.sphere.draw(context,program_state,sparkmatrix,this.materials.sphere2);
-         }
-         }
-
-         for(let i=0; i<100; i++){
-         let sparkmatrix=Mat4.identity();
-         //sparkmatrix=sparkmatrix.times(Mat4.rotation(0.2*t, -1, 0, 0)).times(Mat4.translation(3*t*Math.cos(0.1*i*Math.PI), i*Math.sin(0.1*i*Math.PI) ,3)).times(Mat4.rotation(0.2*t, -1, 0, 0)).times(Mat4.scale(0.1,0.1,0.1));
-         sparkmatrix=sparkmatrix.times(Mat4.translation(18, i*Math.sin(0.1*i*Math.PI) ,20*Math.cos(0.1*i*Math.PI))).times(Mat4.scale(0.1,0.1,0.1));
-         if(Math.floor(3*t)%2==0){
-         this.shapes.sphere.draw(context,program_state,sparkmatrix,this.materials.sphere);}
-         else{
-         this.shapes.sphere.draw(context,program_state,sparkmatrix,this.materials.sphere2);
-         }
-         }
-
-         for(let i=0; i<100; i++){
-         let sparkmatrix=Mat4.identity();
-         //sparkmatrix=sparkmatrix.times(Mat4.rotation(0.2*t, -1, 0, 0)).times(Mat4.translation(3*t*Math.cos(0.1*i*Math.PI), i*Math.sin(0.1*i*Math.PI) ,3)).times(Mat4.rotation(0.2*t, -1, 0, 0)).times(Mat4.scale(0.1,0.1,0.1));
-         sparkmatrix=sparkmatrix.times(Mat4.translation(-18, i*Math.sin(0.1*i*Math.PI) ,20*Math.cos(0.1*i*Math.PI))).times(Mat4.scale(0.1,0.1,0.1));
-         if(Math.floor(3*t)%2==0){
-         this.shapes.sphere.draw(context,program_state,sparkmatrix,this.materials.sphere);}
-         else{
-         this.shapes.sphere.draw(context,program_state,sparkmatrix,this.materials.sphere2);
-         }
-         }
-
+        
 
         
         if(this.attached != undefined)
