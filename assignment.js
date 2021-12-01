@@ -235,10 +235,10 @@ export class Assignment extends Scene {
         
         
         //See if we can angle this up a bit more --HELP
-        cubetransform = cubetransform.times(Mat4.rotation(Math.PI/6,1,0,0)).times(Mat4.translation(0, 0, 0)).times(Mat4.scale(1,1,5))
+        cubetransform = cubetransform.times(Mat4.rotation(Math.PI/23,1,0,0)).times(Mat4.translation(0.5, 2, 21)).times(Mat4.scale(.1,.1,3))
 
         this.shapes.sphere.draw(context, program_state, p3matrix, this.materials.matp3);
-        this.shapes.cube.draw(context, program_state, cubetransform, this.materials.matp3);
+        this.shapes.cube.draw(context, program_state, cubetransform, this.materials.matp1);
 
         let ground_t = Mat4.identity().times(Mat4.rotation(z_rot, 0, 1, 0))
                                       .times(Mat4.translation(...origin))
