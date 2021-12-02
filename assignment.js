@@ -78,7 +78,7 @@ export class Assignment extends Scene {
             planet_1: new (defs.Subdivision_Sphere.prototype.make_flat_shaded_version()) (2),
             planet_2: new defs.Subdivision_Sphere(3),
             moon: new (defs.Subdivision_Sphere.prototype.make_flat_shaded_version()) (1),
-            ground: new defs.Capped_Cylinder(100,100, [[0, 2], [0, 1]]),
+            ground: new defs.Capped_Cylinder(80,80, [[0, 2], [0, 1]]),
             skybox_night: new defs.Subdivision_Sphere(4), 
             
             // TODO:  Fill in as many additional shape instances as needed in this key/value table.
