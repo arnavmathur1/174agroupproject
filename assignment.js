@@ -79,7 +79,7 @@ export class Assignment extends Scene {
             planet_2: new defs.Subdivision_Sphere(3),
             moon: new (defs.Subdivision_Sphere.prototype.make_flat_shaded_version()) (1),
             ground: new defs.Capped_Cylinder(100,100, [[0, 2], [0, 1]]),
-            skybox_night: new defs.Subdivision_Sphere(4),
+            skybox_night: new defs.Subdivision_Sphere(4), 
             
             // TODO:  Fill in as many additional shape instances as needed in this key/value table.
             //        (Requirement 1)
@@ -133,6 +133,22 @@ export class Assignment extends Scene {
         this.initial_camera_location = Mat4.look_at(vec3(0,-25,10), vec3(0, 10, 7), vec3(0, 1, 1));
 
         this.night = true;
+        
+        //var particleSystem = [];
+
+        //for (var i=0; i < 100; i++)
+        //{
+        //    particleSystem.push(new particle);
+        //}
+        this.sparks = [];
+        for(var i = 0; i < 100; i++){
+            this.sparks.push(new particle());
+        }
+
+        this.sparks2 = [];
+        for(var i = 0; i < 100; i++){
+            this.sparks2.push(new particle());
+        }
     }
 
     make_control_panel() {
@@ -160,6 +176,7 @@ export class Assignment extends Scene {
         let cubetransform = Mat4.identity();
         let p2matrix = Mat4.identity();
         let p3matrix = Mat4.identity();
+        let model_transform = Mat4.identity();
         let ringsmatrix0 = Mat4.identity();
         let ringsmatrix1 = Mat4.identity();
         let ringsmatrix2 = Mat4.identity();
@@ -230,7 +247,7 @@ export class Assignment extends Scene {
         // TODO:  Fill in matrix operations and drawing code to draw the solar system scene (Requirements 3 and 4)
 
 
-        const yellow = hex_color("#fac91a");
+        const red = hex_color("#d40402");
         const white = hex_color("#ffffff");
         
         
@@ -260,6 +277,7 @@ export class Assignment extends Scene {
         else{
             this.shapes.skybox_night.draw(context, program_state, sky_t, this.materials.skybox_day);
         }
+
         
         
         if(this.attached != undefined)
@@ -267,6 +285,56 @@ export class Assignment extends Scene {
 
              program_state.camera_inverse = this.attached().map((x,i) => Vector.from(program_state.camera_inverse[i]).mix(x, 0.1));
         }
+        //model_transform = Mat4.identity()
+        //model_transform = model_transform.times(Mat4.translation(10,5,10)).times(Mat4.scale(1/10,1/10,1/10));
+        //this.sparks[0].trans = model_transform;
+        //this.shapes.sphere.draw(context,program_state,this.sparks[0].trans,this.materials.matp3);
+        //model_transform = Mat4.identity();
+        //model_transform = model_transform.times(Mat4.scale(1/10));
+        
+        for(var i = 0; i < 100; i++){
+            model_transform = Mat4.identity();
+            model_transform = model_transform.times(Mat4.translation(10,5,3)).times(Mat4.scale(1/30,1/30,1/30));;       
+            this.sparks[i].position = (this.sparks[i].velocity.times(dt)).plus(this.sparks[i].position);
+            this.sparks[i].velocity = (this.sparks[i].acceleration.times(dt)).plus(this.sparks[i].velocity);
+            model_transform = model_transform.times(Mat4.translation(this.sparks[i].position[0],this.sparks[i].position[1],this.sparks[i].position[2]));
+            this.sparks[i].trans = model_transform;
+            if(t+(7.5*Math.random())>=10){
+                this.sparks[i].life=0;
+            }
+        }
+
+
+        for(var i = 0; i < 100; i++){
+        if(this.sparks[i].life){
+        this.shapes.sphere.draw(context,program_state,this.sparks[i].trans,this.materials.matp3.override({color:red}));
+        }
+        }
+
+       for(var i = 0; i < 100; i++){
+            model_transform = Mat4.identity();
+            model_transform = model_transform.times(Mat4.translation(-6,5,-1)).times(Mat4.scale(1/30,1/30,1/30));       
+            this.sparks2[i].position = (this.sparks2[i].velocity.times(dt)).plus(this.sparks2[i].position);
+            this.sparks2[i].velocity = (this.sparks2[i].acceleration.times(dt)).plus(this.sparks2[i].velocity);
+            //model_transform = model_transform.times(Mat4.translation())
+            model_transform = model_transform.times(Mat4.translation(this.sparks2[i].position[0],this.sparks2[i].position[1],this.sparks2[i].position[2]));
+            this.sparks2[i].trans = model_transform;
+           if(t+(7*Math.random())>=10){
+                this.sparks2[i].life=0;
+            }
+
+        }
+
+        for(var i = 0; i < 100; i++){
+        if(this.sparks2[i].life)
+        this.shapes.sphere.draw(context,program_state,this.sparks2[i].trans,this.materials.matp3.override({color:white}));
+        }
+        //model_transform = model_transform.times(Mat4.translation(10,5,10)).times(Mat4.scale(1/10,1/10,1/10));
+        //this.sparks[0].trans = model_transform;
+
+
+
+////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -485,3 +553,17 @@ class Ring_Shader extends Shader {
     }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class particle
+{
+    constructor(){
+    this.color=vec4(1,0,0,1);
+    this.position=vec3(0,0,0);
+    this.velocity=vec3(8*Math.random(),8*Math.random(),8*Math.random());
+    this.acceleration=vec3(0,-4.9,0);
+    this.mass=1;
+    this.trans=Mat4.identity();
+    this.life=1;
+    }
+}
