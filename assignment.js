@@ -120,7 +120,7 @@ export class Assignment extends Scene {
                 {ambient:1,color: hex_color("#c7e4ee"), specularity:1}), //from https://www.color-name.com/soft-light-blue.color
             
             ground: new Material(new defs.Textured_Phong(1), 
-                {ambient: 1, specularity: 0.1, texture: new Texture("assets/ground2.jpeg")}),
+                {ambient: 0.5, specularity: 0.1, texture: new Texture("assets/ground2.jpeg")}),
 
             skybox_night: new Material(new defs.Textured_Phong(1),
                 {ambient: 1, specularity: 0.1, color: color(0,0,0,1), texture: new Texture("assets/skyscape.png")}),
@@ -155,6 +155,23 @@ export class Assignment extends Scene {
         // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
         this.key_triggered_button("Toggle between Night and Day", ["n"], () => this.night = !this.night);
         this.new_line();
+    }
+
+    sproj(u,t)
+    {
+        //let u = 10;
+        let s = (u*t)+0.5*(-9.81)*Math.pow(t,2);
+
+        return Math.max(s,0);
+    }
+
+    vproj(u,t)
+    {
+
+
+        let v = (this.sproj(u,t) +0.5*(-9.81)*Math.pow(t,2))/t
+
+        return v
     }
 
     display(context, program_state) {
@@ -214,8 +231,12 @@ export class Assignment extends Scene {
        
 
         //p3matrix = p3matrix.times(Mat4.rotation(t/3, 0, 1, 0)).times(Mat4.translation(0, 0 ,0));
+        //
 
-        p3matrix = p3matrix.times(Mat4.translation(...origin_relative))
+        
+
+        p3matrix = p3matrix.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,this.sproj(14,t-2),0))
+
         //this.planet_3 = p3matrix
         this.planet_3 = Mat4.inverse(p3matrix.times(Mat4.translation(0, 0, 5)));
                  
@@ -251,19 +272,26 @@ export class Assignment extends Scene {
         const white = hex_color("#ffffff");
         
         
-        //See if we can angle this up a bit more --HELP
         cubetransform = cubetransform.times(Mat4.rotation(Math.PI/23,1,0,0)).times(Mat4.translation(0.5, 2, 21)).times(Mat4.scale(.1,.1,3))
 
+//         if (this.vproj(14, t-2)>0)
+//         {
+//             this.shapes.sphere.draw(context, program_state, p3matrix, this.materials.matp3);
+//             //console.log(this.vproj(14, t-2))
+//         }
+
         this.shapes.sphere.draw(context, program_state, p3matrix, this.materials.matp3);
+
         this.shapes.cube.draw(context, program_state, cubetransform, this.materials.matp1);
 
-        let ground_t = Mat4.identity().times(Mat4.rotation(z_rot, 0, 1, 0))
+        let ground_t = Mat4.identity().times(Mat4.translation(...origin_relative))
+                                      .times(Mat4.rotation(z_rot, 0, 1, 0))
                                       .times(Mat4.translation(...origin))
                                       .times(Mat4.rotation(Math.PI/2, 1, 0, 0))
                                       .times(Mat4.translation(0, 0, 2))
                                       .times(Mat4.scale(60, 60, 0.5));
         
-        this.shapes.ground.draw(context, program_state, ground_t, this.materials.ground);
+        
 
         let sky_t = Mat4.identity().times(Mat4.rotation(z_rot, 0, 1, 0))
                                       .times(Mat4.translation(...origin))
@@ -273,9 +301,11 @@ export class Assignment extends Scene {
         
         if (this.night){
             this.shapes.skybox_night.draw(context, program_state, sky_t, this.materials.skybox_night);
+            this.shapes.ground.draw(context, program_state, ground_t, this.materials.ground);
         }
         else{
             this.shapes.skybox_night.draw(context, program_state, sky_t, this.materials.skybox_day);
+            this.shapes.ground.draw(context, program_state, ground_t, this.materials.ground.override({ambient: 1}));
         }
 
         
