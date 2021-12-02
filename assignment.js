@@ -141,13 +141,18 @@ export class Assignment extends Scene {
         //    particleSystem.push(new particle);
         //}
         this.sparks = [];
-        for(var i = 0; i < 100; i++){
+        for(var i = 0; i < 300; i++){
             this.sparks.push(new particle());
         }
 
         this.sparks2 = [];
-        for(var i = 0; i < 100; i++){
+        for(var i = 0; i < 300; i++){
             this.sparks2.push(new particle());
+        }
+
+        this.sparks3 = [];
+        for(var i = 0; i < 300; i++){
+            this.sparks3.push(new particle_2());
         }
     }
 
@@ -270,17 +275,23 @@ export class Assignment extends Scene {
 
         const red = hex_color("#d40402");
         const white = hex_color("#ffffff");
+        const blue = hex_color("#1738B7");
         
         
         cubetransform = cubetransform.times(Mat4.rotation(Math.PI/23,1,0,0)).times(Mat4.translation(0.5, 2, 21)).times(Mat4.scale(.1,.1,3))
 
-//         if (this.vproj(14, t-2)>0)
-//         {
-//             this.shapes.sphere.draw(context, program_state, p3matrix, this.materials.matp3);
-//             //console.log(this.vproj(14, t-2))
-//         }
+         let flag = 0;
+         if (this.vproj(14, t-2)>0)
+         {
+             this.shapes.sphere.draw(context, program_state, p3matrix, this.materials.matp3);
+             //console.log(this.vproj(14, t-2))
+         }
+         else
+         {
+             flag=1;
+         }
 
-        this.shapes.sphere.draw(context, program_state, p3matrix, this.materials.matp3);
+        //this.shapes.sphere.draw(context, program_state, p3matrix, this.materials.matp3);
 
         this.shapes.cube.draw(context, program_state, cubetransform, this.materials.matp1);
 
@@ -321,29 +332,33 @@ export class Assignment extends Scene {
         //this.shapes.sphere.draw(context,program_state,this.sparks[0].trans,this.materials.matp3);
         //model_transform = Mat4.identity();
         //model_transform = model_transform.times(Mat4.scale(1/10));
-        
-        for(var i = 0; i < 100; i++){
+
+
+        if(flag==1){
+        for(var i = 0; i < 300; i++){
             model_transform = Mat4.identity();
-            model_transform = model_transform.times(Mat4.translation(10,5,3)).times(Mat4.scale(1/30,1/30,1/30));;       
-            this.sparks[i].position = (this.sparks[i].velocity.times(dt)).plus(this.sparks[i].position);
-            this.sparks[i].velocity = (this.sparks[i].acceleration.times(dt)).plus(this.sparks[i].velocity);
+            model_transform = model_transform.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,10,0)).times(Mat4.scale(1/40,1/40,1/40));;       
+            this.sparks[i].position = (this.sparks[i].velocity.times(1)).plus(this.sparks[i].position);
+            this.sparks[i].velocity = (this.sparks[i].acceleration.times(0.4*Math.random())).plus(this.sparks[i].velocity);
+            this.sparks[i].velocity = (this.sparks[i].velocity).times(0.7)
             model_transform = model_transform.times(Mat4.translation(this.sparks[i].position[0],this.sparks[i].position[1],this.sparks[i].position[2]));
             this.sparks[i].trans = model_transform;
-            if(t+(7.5*Math.random())>=10){
+            if(t+(7.5*Math.random())>=11.5){
                 this.sparks[i].life=0;
             }
         }
 
 
-        for(var i = 0; i < 100; i++){
+        for(var i = 0; i < 300; i++){
         if(this.sparks[i].life){
-        this.shapes.sphere.draw(context,program_state,this.sparks[i].trans,this.materials.matp3.override({color:red}));
+        this.shapes.sphere.draw(context,program_state,this.sparks[i].trans,this.materials.matp3.override({color:blue}));
+        }
         }
         }
 
-       for(var i = 0; i < 100; i++){
+       for(var i = 0; i < 300; i++){
             model_transform = Mat4.identity();
-            model_transform = model_transform.times(Mat4.translation(-6,5,-1)).times(Mat4.scale(1/30,1/30,1/30));       
+            model_transform = model_transform.times(Mat4.translation(...origin_relative)).times(Mat4.translation(-6,6,7)).times(Mat4.scale(1/70,1/70,1/70));       
             this.sparks2[i].position = (this.sparks2[i].velocity.times(dt)).plus(this.sparks2[i].position);
             this.sparks2[i].velocity = (this.sparks2[i].acceleration.times(dt)).plus(this.sparks2[i].velocity);
             //model_transform = model_transform.times(Mat4.translation())
@@ -355,10 +370,35 @@ export class Assignment extends Scene {
 
         }
 
-        for(var i = 0; i < 100; i++){
+        for(var i = 0; i < 300; i++){
         if(this.sparks2[i].life)
         this.shapes.sphere.draw(context,program_state,this.sparks2[i].trans,this.materials.matp3.override({color:white}));
         }
+        ///////////////////////////////////////////////////////////////
+        //Anar
+/*        model_transform = Mat4.identity();
+        model_transform = model_transform.times(Mat4.translation(0,0,-3)).times(Mat4.scale(1/30,1/30,1/30));       
+        for(var i = 0; i < 100; i++){
+            this.sparks3[i].position = (this.sparks3[i].velocity.times(dt)).plus(this.sparks3[i].position);
+            this.sparks3[i].velocity = (this.sparks3[i].acceleration.times(dt)).plus(this.sparks3[i].velocity);
+            //model_transform = model_transform.times(Mat4.translation())
+            if(i%2==0){
+            model_transform = model_transform.times(Mat4.translation(0.1*dt,this.sparks3[i].position[1]-this.sparks3[i].position[0],0));}
+            else{
+            model_transform = model_transform.times(Mat4.translation(-0.1*dt,this.sparks3[i].position[1]+this.sparks3[i].position[0],0));}    
+        
+            this.sparks3[i].trans = model_transform;
+            if(t+(7*Math.random())>=10){
+                this.sparks3[i].life=0;
+            }
+
+        }
+
+        for(var i = 0; i < 100; i++){
+        if(this.sparks3[i].life)
+        this.shapes.sphere.draw(context,program_state,this.sparks3[i].trans,this.materials.matp3.override({color:white}));
+        }
+        */
         //model_transform = model_transform.times(Mat4.translation(10,5,10)).times(Mat4.scale(1/10,1/10,1/10));
         //this.sparks[0].trans = model_transform;
 
@@ -590,7 +630,20 @@ class particle
     constructor(){
     this.color=vec4(1,0,0,1);
     this.position=vec3(0,0,0);
-    this.velocity=vec3(8*Math.random(),8*Math.random(),8*Math.random());
+    this.velocity=vec3(7*Math.random()+1,7*Math.random()+1,7*Math.random()+1);
+    this.acceleration=vec3(-1+2*Math.random(),-1.5,-1+2*Math.random());
+    this.mass=1;
+    this.trans=Mat4.identity();
+    this.life=1;
+    }
+}
+
+class particle_2
+{
+    constructor(){
+    this.color=vec4(1,0,0,1);
+    this.position=vec3(0,0,0);
+    this.velocity=vec3(8*Math.random(),8,8*Math.random());
     this.acceleration=vec3(0,-4.9,0);
     this.mass=1;
     this.trans=Mat4.identity();
