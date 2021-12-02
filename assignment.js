@@ -78,7 +78,7 @@ export class Assignment extends Scene {
             planet_1: new (defs.Subdivision_Sphere.prototype.make_flat_shaded_version()) (2),
             planet_2: new defs.Subdivision_Sphere(3),
             moon: new (defs.Subdivision_Sphere.prototype.make_flat_shaded_version()) (1),
-            ground: new defs.Capped_Cylinder(100,100, [[0, 2], [0, 1]]),
+            ground: new defs.Capped_Cylinder(80,80, [[0, 2], [0, 1]]),
             skybox_night: new defs.Subdivision_Sphere(4),
             
             // TODO:  Fill in as many additional shape instances as needed in this key/value table.
@@ -120,7 +120,7 @@ export class Assignment extends Scene {
                 {ambient:1,color: hex_color("#c7e4ee"), specularity:1}), //from https://www.color-name.com/soft-light-blue.color
             
             ground: new Material(new defs.Textured_Phong(1), 
-                {ambient: 1, specularity: 0.1, texture: new Texture("assets/ground2.jpeg")}),
+                {ambient: 0.5, specularity: 0.1, texture: new Texture("assets/ground2.jpeg")}),
 
             skybox_night: new Material(new defs.Textured_Phong(1),
                 {ambient: 1, specularity: 0.1, color: color(0,0,0,1), texture: new Texture("assets/skyscape.png")}),
@@ -274,7 +274,7 @@ export class Assignment extends Scene {
                                       .times(Mat4.translation(0, 0, 2))
                                       .times(Mat4.scale(60, 60, 0.5));
         
-        this.shapes.ground.draw(context, program_state, ground_t, this.materials.ground);
+        
 
         let sky_t = Mat4.identity().times(Mat4.rotation(z_rot, 0, 1, 0))
                                       .times(Mat4.translation(...origin))
@@ -284,9 +284,11 @@ export class Assignment extends Scene {
         
         if (this.night){
             this.shapes.skybox_night.draw(context, program_state, sky_t, this.materials.skybox_night);
+            this.shapes.ground.draw(context, program_state, ground_t, this.materials.ground);
         }
         else{
             this.shapes.skybox_night.draw(context, program_state, sky_t, this.materials.skybox_day);
+            this.shapes.ground.draw(context, program_state, ground_t, this.materials.ground.override({ambient: 1}));
         }
         
         
