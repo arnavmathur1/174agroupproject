@@ -157,6 +157,8 @@ export class Assignment extends Scene {
 
         this.rocket_contact = 0;
         this.r_flag=0;
+        this.firework_time=0;
+        this.explosion_flag=0;
     }
 
     make_control_panel() {
@@ -246,7 +248,7 @@ export class Assignment extends Scene {
         rocket_matrix = Mat4.identity();
         rocket_matrix = rocket_matrix.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,this.sproj(14,t-this.contact_time-this.delay),0));
         this.contact_complete = 1;
-        console.log(t-this.contact_time-this.delay)
+        //console.log(t-this.contact_time-this.delay)
 
         }
         else if(this.contact_complete==0)
@@ -291,9 +293,11 @@ export class Assignment extends Scene {
              //this.flag=1;
              //console.log(this.vproj(14, t-2))
          }
-         else
+         else if(this.explosion_flag==0)
          {
+             this.firework_time=t;
              this.flag=1;
+             this.explosion_flag=1;
          }
          }
          else{
@@ -355,6 +359,7 @@ export class Assignment extends Scene {
     
 
         //console.log(this.contact_time)
+        console.log(this.flag)
 
         if(this.flag==1){
         for(var i = 0; i < 300; i++){
@@ -365,7 +370,7 @@ export class Assignment extends Scene {
             this.sparks[i].velocity = (this.sparks[i].velocity).times(0.7)
             model_transform = model_transform.times(Mat4.translation(this.sparks[i].position[0],this.sparks[i].position[1],this.sparks[i].position[2]));
             this.sparks[i].trans = model_transform;
-            if(t+(7.5*Math.random())>=11.5){
+            if(t-this.firework_time+(7.5*Math.random())>=11.5){
                 this.sparks[i].life=0;
             }
         }
