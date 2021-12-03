@@ -72,6 +72,11 @@ export class Assignment extends Scene {
         // constructor(): Scenes begin by populating initial values like the Shapes and Materials they'll need.
         super();
 
+        this.contact_time = 0
+        this.contact_complete = 0
+        this.flag = 0
+
+
         // At the beginning of our program, load one of each of these shape definitions onto the GPU.
         this.shapes = {
             cube: new defs.Cube(),
@@ -231,16 +236,16 @@ export class Assignment extends Scene {
         sunmatrix = sunmatrix.times(Mat4.scale(sunscaler, sunscaler, sunscaler));
          
 
-        let contact_time = 0;
-        let contact_complete = 0;
+        this.contact_time = 0;
+        this.contact_complete = 0;
         //this.sproj(14,t-contact_time-8)
        
 
 
-        if(this.rocket_contact==1 && contact_complete==0)
+        if(this.rocket_contact==1 && this.contact_complete==0)
         {
         rocket_matrix = Mat4.identity();
-        rocket_matrix = rocket_matrix.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,this.sproj(14,t-contact_time-2),0));
+        rocket_matrix = rocket_matrix.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,this.sproj(14,t-this.contact_time-2),0));
         contact_complete = 1;
 
         }
@@ -305,7 +310,7 @@ export class Assignment extends Scene {
         if(distance_between(cube_pos,rocket_pos)<0.5 && this.r_flag==0)
         {
             this.rocket_contact=1;
-            contact_time = t;
+            this.contact_time = t;
             this.r_flag = 1;
 
         }
@@ -362,7 +367,8 @@ export class Assignment extends Scene {
                 this.sparks[i].life=0;
             }
         }
-
+        
+        console.log(this.contact_time)
 
         for(var i = 0; i < 300; i++){
         if(this.sparks[i].life){
