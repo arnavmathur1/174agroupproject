@@ -133,13 +133,7 @@ export class Assignment extends Scene {
         this.initial_camera_location = Mat4.look_at(vec3(0,-25,10), vec3(0, 10, 7), vec3(0, 1, 1));
 
         this.night = true;
-        
-        //var particleSystem = [];
 
-        //for (var i=0; i < 100; i++)
-        //{
-        //    particleSystem.push(new particle);
-        //}
         this.sparks = [];
         for(var i = 0; i < 300; i++){
             this.sparks.push(new particle());
@@ -150,10 +144,8 @@ export class Assignment extends Scene {
             this.sparks2.push(new particle());
         }
 
-        this.sparks3 = [];
-        for(var i = 0; i < 300; i++){
-            this.sparks3.push(new particle_2());
-        }
+        this.Rocket = new Item(0,0,0);
+        this.rocket_contact = 0;
     }
 
     make_control_panel() {
@@ -197,7 +189,7 @@ export class Assignment extends Scene {
 
         let cubetransform = Mat4.identity();
         let p2matrix = Mat4.identity();
-        let p3matrix = Mat4.identity();
+        let rocket_matrix = Mat4.identity();
         let model_transform = Mat4.identity();
         let ringsmatrix0 = Mat4.identity();
         let ringsmatrix1 = Mat4.identity();
@@ -206,6 +198,8 @@ export class Assignment extends Scene {
 
         let p4matrix = Mat4.identity();
         let moonmatrix = Mat4.identity();
+
+        //let rocket_contact = 0;
 
 
 
@@ -235,23 +229,22 @@ export class Assignment extends Scene {
 
        
 
-        //p3matrix = p3matrix.times(Mat4.rotation(t/3, 0, 1, 0)).times(Mat4.translation(0, 0 ,0));
-        //
 
-        
+        if(this.rocket_contact==1)
+        {
+        rocket_matrix = rocket_matrix.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,this.sproj(14,t-2),0));
+        }
+        else
+        {
+            rocket_matrix = rocket_matrix.times(Mat4.translation(...origin_relative));
+        }
 
-        p3matrix = p3matrix.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,this.sproj(14,t-2),0))
-
-        //this.planet_3 = p3matrix
-        this.planet_3 = Mat4.inverse(p3matrix.times(Mat4.translation(0, 0, 5)));
                  
 
 
         
          ringsmatrix0 = ringsmatrix0.times(Mat4.translation(0, 0 , 3));
-        //ringsmatrix1 = ringsmatrix1.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(t/3, 0, 0, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.scale(1.7,1.7,0.0001))
-        //ringsmatrix2 = ringsmatrix2.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(t/3, 0, 0, 1)).times(Mat4.translation(0, 0 ,0)).times(Mat4.scale(2.2,2.2,0.0001))
-        ringsmatrix3 = ringsmatrix3.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(2*t, 0, 0, 1)).times(Mat4.translation(0, 0 ,3)).times(Mat4.rotation(0.2*Math.sin(10 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(4.5,4.5,0.0001));
+         ringsmatrix3 = ringsmatrix3.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(2*t, 0, 0, 1)).times(Mat4.translation(0, 0 ,3)).times(Mat4.rotation(0.2*Math.sin(10 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(4.5,4.5,0.0001));
 
         
         let ringsmatrix4 = ringsmatrix0.times(Mat4.rotation(6*t, 0, 0, 1)).times(Mat4.translation(2, 0, 0));
@@ -261,16 +254,10 @@ export class Assignment extends Scene {
         let ringsmatrix7 = ringsmatrix0.times(Mat4.translation(-13, 0, 0)).times(Mat4.rotation(6*t, 0, 0, -1)).times(Mat4.translation(2, 0 , 0)).times(Mat4.rotation(0.1*Math.sin(7 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(2,2,0.0001));
 
 
-        // TODO: Lighting (Requirement 2)
-        //const light_position = vec4(0,5, 5 , 1);
+
         const light_position = vec4(0,0, 0 , 1);
-        // The parameters of the Light are: position, color, size
-        //let light = [new Light(vec4(0,0,0,1), color(1,0.5 + Math.sin(1/5 * Math.PI * t),0.5 + Math.sin(1/5 * Math.PI * t),1), 10**sunscaler)];
         let light = [new Light(light_position, color(1,  0.5 + 0.5*Math.sin(1/5 * Math.PI * t),  0.5 + 0.5*Math.sin(1/5 * Math.PI * t),1), 10 **sunscaler)]
         program_state.lights = light;
-
-
-        // TODO:  Fill in matrix operations and drawing code to draw the solar system scene (Requirements 3 and 4)
 
 
         const red = hex_color("#d40402");
@@ -281,14 +268,19 @@ export class Assignment extends Scene {
         cubetransform = cubetransform.times(Mat4.rotation(Math.PI/23,1,0,0)).times(Mat4.translation(0.5, 2, 21)).times(Mat4.scale(.1,.1,3))
 
          let flag = 0;
+         if(this.rocket_contact==1){
          if (this.vproj(14, t-2)>0)
          {
-             this.shapes.sphere.draw(context, program_state, p3matrix, this.materials.matp3);
+             this.shapes.sphere.draw(context, program_state, rocket_matrix, this.materials.matp3);
              //console.log(this.vproj(14, t-2))
          }
          else
          {
              flag=1;
+         }
+         }
+         else{
+             this.shapes.sphere.draw(context, program_state, rocket_matrix, this.materials.matp3);
          }
 
         //this.shapes.sphere.draw(context, program_state, p3matrix, this.materials.matp3);
@@ -374,37 +366,6 @@ export class Assignment extends Scene {
         if(this.sparks2[i].life)
         this.shapes.sphere.draw(context,program_state,this.sparks2[i].trans,this.materials.matp3.override({color:white}));
         }
-        ///////////////////////////////////////////////////////////////
-        //Anar
-/*        model_transform = Mat4.identity();
-        model_transform = model_transform.times(Mat4.translation(0,0,-3)).times(Mat4.scale(1/30,1/30,1/30));       
-        for(var i = 0; i < 100; i++){
-            this.sparks3[i].position = (this.sparks3[i].velocity.times(dt)).plus(this.sparks3[i].position);
-            this.sparks3[i].velocity = (this.sparks3[i].acceleration.times(dt)).plus(this.sparks3[i].velocity);
-            //model_transform = model_transform.times(Mat4.translation())
-            if(i%2==0){
-            model_transform = model_transform.times(Mat4.translation(0.1*dt,this.sparks3[i].position[1]-this.sparks3[i].position[0],0));}
-            else{
-            model_transform = model_transform.times(Mat4.translation(-0.1*dt,this.sparks3[i].position[1]+this.sparks3[i].position[0],0));}    
-        
-            this.sparks3[i].trans = model_transform;
-            if(t+(7*Math.random())>=10){
-                this.sparks3[i].life=0;
-            }
-
-        }
-
-        for(var i = 0; i < 100; i++){
-        if(this.sparks3[i].life)
-        this.shapes.sphere.draw(context,program_state,this.sparks3[i].trans,this.materials.matp3.override({color:white}));
-        }
-        */
-        //model_transform = model_transform.times(Mat4.translation(10,5,10)).times(Mat4.scale(1/10,1/10,1/10));
-        //this.sparks[0].trans = model_transform;
-
-
-
-////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -648,5 +609,14 @@ class particle_2
     this.mass=1;
     this.trans=Mat4.identity();
     this.life=1;
+    }
+}
+
+class Item
+{
+    constructor(x,y,z){
+        this.trans = Mat4.identity();
+        this.trans = this.trans.times(Mat4.translation(...origin_relative)).times(Mat4.translation(x,y,z));
+        this.position = vec3(this.trans[0][3],this.trans[1][3],this.trans[2][3]);
     }
 }
