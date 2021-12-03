@@ -77,6 +77,7 @@ export class Assignment extends Scene {
         this.flag = 0;
         this.r_flag = 0;
         this.delay = 4;
+        this.u = 12;
 
 
         // At the beginning of our program, load one of each of these shape definitions onto the GPU.
@@ -246,7 +247,7 @@ export class Assignment extends Scene {
         if(this.rocket_contact==1)
         {
         rocket_matrix = Mat4.identity();
-        rocket_matrix = rocket_matrix.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,this.sproj(14,t-this.contact_time-this.delay),0));
+        rocket_matrix = rocket_matrix.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,this.sproj(this.u,t-this.contact_time-this.delay),0));
         this.contact_complete = 1;
         //console.log(t-this.contact_time-this.delay)
 
@@ -287,11 +288,10 @@ export class Assignment extends Scene {
 
          //let flag = 0;
          if(this.rocket_contact==1){
-         if (this.vproj(14, t-this.contact_time-this.delay)>0)
+         if (this.vproj(this.u, t-this.contact_time-this.delay)>0)
          {
              this.shapes.sphere.draw(context, program_state, rocket_matrix, this.materials.matp3);
              //this.flag=1;
-             //console.log(this.vproj(14, t-2))
          }
          else if(this.explosion_flag==0)
          {
@@ -364,7 +364,7 @@ export class Assignment extends Scene {
         if(this.flag==1){
         for(var i = 0; i < 300; i++){
             model_transform = Mat4.identity();
-            model_transform = model_transform.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,10,0)).times(Mat4.scale(1/40,1/40,1/40));;       
+            model_transform = model_transform.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,7.35,0)).times(Mat4.scale(1/40,1/40,1/40));;       
             this.sparks[i].position = (this.sparks[i].velocity.times(1)).plus(this.sparks[i].position);
             this.sparks[i].velocity = (this.sparks[i].acceleration.times(0.4*Math.random())).plus(this.sparks[i].velocity);
             this.sparks[i].velocity = (this.sparks[i].velocity).times(0.7)
