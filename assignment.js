@@ -368,18 +368,25 @@ export class Assignment extends Scene {
 
 
         
-         ringsmatrix0 = ringsmatrix0.times(Mat4.translation(0, 0 , 3));
-         ringsmatrix3 = ringsmatrix3.times(Mat4.rotation(0, 1, 1, 1)).times(Mat4.rotation(2*t, 0, 0, 1)).times(Mat4.translation(0, 0 ,3)).times(Mat4.rotation(0.2*Math.sin(10 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(4.5,4.5,0.0001));
+         ringsmatrix0 = ringsmatrix0.times(Mat4.translation(...origin_relative)).times(Mat4.translation(6, -1, 0)).times(Mat4.rotation(Math.PI/2, 1, 0, 0));
+         ringsmatrix3 = ringsmatrix3.times(Mat4.translation(...origin_relative)).times(Mat4.translation(6, 2, 0)).times(Mat4.rotation(Math.PI/2, 1, 0, 0)).times(Mat4.rotation(2*t, 0, 0, 1)).times(Mat4.translation(0, 0 ,3)).times(Mat4.rotation(0.2*Math.sin(10 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(4.5,4.5,0.0001));
 
         
-        let ringsmatrix4 = ringsmatrix0.times(Mat4.rotation(6*t, 0, 0, 1)).times(Mat4.translation(2, 0, 0));
+        let ringsmatrix4 = ringsmatrix0.times(Mat4.translation(13, 0, 0)).times(Mat4.rotation(6*t, 0, 0, 1)).times(Mat4.translation(2, 0, 0));
         let ringsmatrix5 = ringsmatrix0.times(Mat4.translation(13, 0, 0)).times(Mat4.rotation(6*t, 0, 0, 1)).times(Mat4.translation(2, 0 , 0)).times(Mat4.rotation(0.1*Math.sin(7 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(2,2,0.0001));
           
         let ringsmatrix6 = ringsmatrix0.times(Mat4.translation(-13, 0, 0)).times(Mat4.rotation(6*t, 0, 0, -1)).times(Mat4.translation(2, 0, 0));
         let ringsmatrix7 = ringsmatrix0.times(Mat4.translation(-13, 0, 0)).times(Mat4.rotation(6*t, 0, 0, -1)).times(Mat4.translation(2, 0 , 0)).times(Mat4.rotation(0.1*Math.sin(7 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(2,2,0.0001));
 
 
+        this.shapes.torus.draw(context, program_state, ringsmatrix0, this.materials.ring2);
+        this.shapes.torus.draw(context, program_state, ringsmatrix3, this.materials.ring);
 
+        this.shapes.torus.draw(context, program_state, ringsmatrix4, this.materials.ring2);
+        this.shapes.torus.draw(context, program_state, ringsmatrix5, this.materials.ring);
+
+        this.shapes.torus.draw(context, program_state, ringsmatrix6, this.materials.ring2);
+        this.shapes.torus.draw(context, program_state, ringsmatrix7, this.materials.ring);
 
         const light_position = vec4(0,0, 0 , 1);
         let light = [new Light(light_position, color(1,  0.5 + 0.5*Math.sin(1/5 * Math.PI * t),  0.5 + 0.5*Math.sin(1/5 * Math.PI * t),1), 10 **sunscaler)]
