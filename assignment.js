@@ -76,6 +76,7 @@ export class Assignment extends Scene {
         this.contact_complete = 0;
         this.flag = 0;
         this.r_flag = 0;
+        this.delay = 4;
 
 
         // At the beginning of our program, load one of each of these shape definitions onto the GPU.
@@ -243,7 +244,7 @@ export class Assignment extends Scene {
         if(this.rocket_contact==1)
         {
         rocket_matrix = Mat4.identity();
-        rocket_matrix = rocket_matrix.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,this.sproj(14,t-this.contact_time),0));
+        rocket_matrix = rocket_matrix.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,this.sproj(14,t-this.contact_time-5),0));
         this.contact_complete = 1;
         console.log(t-this.contact_time)
 
