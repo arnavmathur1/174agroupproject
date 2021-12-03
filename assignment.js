@@ -240,7 +240,7 @@ export class Assignment extends Scene {
        
 
 
-        if(this.rocket_contact==1)
+        if(this.rocket_contact==1 && this.contact_complete == 0)
         {
         rocket_matrix = Mat4.identity();
         rocket_matrix = rocket_matrix.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,this.sproj(14,t-this.contact_time),0));
@@ -248,7 +248,7 @@ export class Assignment extends Scene {
         console.log(t-this.contact_time)
 
         }
-        else
+        else if(this.contact_complete==0)
         {
             rocket_matrix = rocket_matrix.times(Mat4.translation(...origin_relative));
         }
