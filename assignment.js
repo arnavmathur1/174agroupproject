@@ -198,8 +198,6 @@ export class Assignment extends Scene {
             skybox_night: new defs.Subdivision_Sphere(4),
             rocket: new Shape_From_File( "/assets/rocket.obj" ),
                          
-            // TODO:  Fill in as many additional shape instances as needed in this key/value table.
-            //        (Requirement 1)
         };
         this.shapes.ground.arrays.texture_coord.forEach(f => f.scale_by(60));
 
@@ -211,8 +209,6 @@ export class Assignment extends Scene {
                 {ambient: .4, diffusivity: .6, color: hex_color("#992828")}),
             ring: new Material(new Ring_Shader(), {ambient:1, diffusivity: 1, color: hex_color("#f000ff"), specularity:1}),
             ring2: new Material(new Ring_Shader(), {ambient:1, diffusivity: 1, color: hex_color("#f000ff"), specularity:1}),
-            // TODO:  Fill in as many additional material objects as needed in this key/value table.
-            //        (Requirement 4)
 
             sphere: new Material(new defs.Phong_Shader(),
                 {ambient: 1, diffusivity: 1, color: hex_color("#ffa500")}),
@@ -265,18 +261,19 @@ export class Assignment extends Scene {
         this.r_flag=0;
         this.firework_time=0;
         this.explosion_flag=0;
+        this.spinner_1_flag=0;
+        this.spinner_2_flag=0;
+        this.spinner_3_flag=0;
     }
 
     make_control_panel() {
         // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
         this.key_triggered_button("Toggle between Night and Day", ["n"], () => this.night = !this.night);
         this.new_line();
-        this.Rocket = new Item(...origin_relative);
     }
 
     sproj(u,t)
     {
-        //let u = 10;
         let s = (u*t)+0.5*(-9.81)*Math.pow(t,2);
 
         return Math.max(s,0);
@@ -304,9 +301,6 @@ export class Assignment extends Scene {
         program_state.projection_transform = Mat4.perspective(
             Math.PI / 4, context.width / context.height, .1, 1000);
 
-        // TODO: Create Planets (Requirement 1)
-        // this.shapes.[XXX].draw([XXX]) // <--example
-
         let cubetransform = Mat4.identity();
         let p2matrix = Mat4.identity();
         let rocket_matrix = Mat4.identity();
@@ -318,6 +312,9 @@ export class Assignment extends Scene {
 
         let p4matrix = Mat4.identity();
         let moonmatrix = Mat4.identity();
+
+        cubetransform = cubetransform.times(Mat4.rotation(Math.PI/23,1,0,0)).times(Mat4.translation(0.5, 2, 21)).times(Mat4.scale(.1,.1,3))
+        let cube_pos = vec3(cubetransform[0][3],cubetransform[1][3],cubetransform[2][3]);
 
 
 
@@ -355,7 +352,6 @@ export class Assignment extends Scene {
         rocket_matrix = rocket_matrix.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,this.sproj(this.u,t-this.contact_time-this.delay),0));
         rocket_matrix = rocket_matrix.times(Mat4.scale(.3,.3,.3));
         this.contact_complete = 1;
-        //console.log(t-this.contact_time-this.delay)
 
         }
         else if(this.contact_complete==0)
@@ -368,25 +364,47 @@ export class Assignment extends Scene {
 
 
         
-         ringsmatrix0 = ringsmatrix0.times(Mat4.translation(...origin_relative)).times(Mat4.translation(6, -1, 0)).times(Mat4.rotation(Math.PI/2, 1, 0, 0));
-         ringsmatrix3 = ringsmatrix3.times(Mat4.translation(...origin_relative)).times(Mat4.translation(6, 2, 0)).times(Mat4.rotation(Math.PI/2, 1, 0, 0)).times(Mat4.rotation(2*t, 0, 0, 1)).times(Mat4.translation(0, 0 ,3)).times(Mat4.rotation(0.2*Math.sin(10 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(4.5,4.5,0.0001));
+         if(this.spinner_1_flag==1)
+         {
+            ringsmatrix0 = ringsmatrix0.times(Mat4.translation(...origin_relative)).times(Mat4.translation(6, -1, 0)).times(Mat4.rotation(Math.PI/2, 1, 0, 0)).times(Mat4.scale(0.3,0.3,0.3));
+            ringsmatrix3 = ringsmatrix3.times(Mat4.translation(...origin_relative)).times(Mat4.translation(6, 2, 0)).times(Mat4.rotation(Math.PI/2, 1, 0, 0)).times(Mat4.rotation(2*t, 0, 0, 1)).times(Mat4.translation(0, 0 ,3)).times(Mat4.rotation(0.2*Math.sin(10 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(1,1,0.0001));
+         }
+         else
+         {
+            ringsmatrix0 = ringsmatrix0.times(Mat4.translation(...origin_relative)).times(Mat4.translation(6, -1, 0)).times(Mat4.rotation(Math.PI/2, 1, 0, 0)).times(Mat4.scale(0.3,0.3,0.3));
+            ringsmatrix3 = ringsmatrix3.times(Mat4.translation(...origin_relative)).times(Mat4.translation(6, 2, 0)).times(Mat4.rotation(Math.PI/2, 1, 0, 0)).times(Mat4.translation(0, 0 ,3)).times(Mat4.scale(1,1,0.0001));
+         }
 
-        
-        let ringsmatrix4 = ringsmatrix0.times(Mat4.translation(13, 0, 0)).times(Mat4.rotation(6*t, 0, 0, 1)).times(Mat4.translation(2, 0, 0));
-        let ringsmatrix5 = ringsmatrix0.times(Mat4.translation(13, 0, 0)).times(Mat4.rotation(6*t, 0, 0, 1)).times(Mat4.translation(2, 0 , 0)).times(Mat4.rotation(0.1*Math.sin(7 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(2,2,0.0001));
+        let spinner_1_pos = vec3(ringsmatrix0[0][3],ringsmatrix0[1][3],ringsmatrix0[2][3]);
+        if(distance_between(cube_pos,spinner_1_pos)<0.9)
+        {
+            this.spinner_1_flag=1;
+        }
+
+        let ringsmatrix4 = Mat4.identity();
+        let ringsmatrix5 = Mat4.identity();
+        if(this.spinner_2_flag==1)
+        {        
+            ringsmatrix4 = ringsmatrix0.times(Mat4.translation(13, 0, 0)).times(Mat4.rotation(6*t, 0, 0, 1)).times(Mat4.translation(2, 0, 0)).times(Mat4.scale(1.2,1.2,1.2));
+            ringsmatrix5 = ringsmatrix0.times(Mat4.translation(13, 0, 0)).times(Mat4.rotation(6*t, 0, 0, 1)).times(Mat4.translation(2, 0 , 0)).times(Mat4.rotation(0.1*Math.sin(7 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(2,2,0.0001));
+        }
+        else
+        {         
+            ringsmatrix4 = ringsmatrix0.times(Mat4.translation(13, 0, 0)).times(Mat4.translation(2, 0, 0)).times(Mat4.scale(1.2,1.2,1.2));
+            ringsmatrix5 = ringsmatrix0.times(Mat4.translation(13, 0, 0)).times(Mat4.translation(2, 0 , 0)).times(Mat4.scale(2,2,0.0001));
+        }
+
+        let spinner_2_pos = vec3(ringsmatrix4[0][3],ringsmatrix4[1][3],ringsmatrix4[2][3]);
+        if(distance_between(cube_pos,spinner_2_pos)<0.9)
+        {
+            this.spinner_2_flag=1;
+        }
           
-        let ringsmatrix6 = ringsmatrix0.times(Mat4.translation(-13, 0, 0)).times(Mat4.rotation(6*t, 0, 0, -1)).times(Mat4.translation(2, 0, 0));
-        let ringsmatrix7 = ringsmatrix0.times(Mat4.translation(-13, 0, 0)).times(Mat4.rotation(6*t, 0, 0, -1)).times(Mat4.translation(2, 0 , 0)).times(Mat4.rotation(0.1*Math.sin(7 * Math.PI * t/2), 1, 1, 1)).times(Mat4.scale(2,2,0.0001));
-
-
         this.shapes.torus.draw(context, program_state, ringsmatrix0, this.materials.ring2);
         this.shapes.torus.draw(context, program_state, ringsmatrix3, this.materials.ring);
 
         this.shapes.torus.draw(context, program_state, ringsmatrix4, this.materials.ring2);
         this.shapes.torus.draw(context, program_state, ringsmatrix5, this.materials.ring);
-
-        this.shapes.torus.draw(context, program_state, ringsmatrix6, this.materials.ring2);
-        this.shapes.torus.draw(context, program_state, ringsmatrix7, this.materials.ring);
 
         const light_position = vec4(0,0, 0 , 1);
         let light = [new Light(light_position, color(1,  0.5 + 0.5*Math.sin(1/5 * Math.PI * t),  0.5 + 0.5*Math.sin(1/5 * Math.PI * t),1), 10 **sunscaler)]
@@ -397,15 +415,11 @@ export class Assignment extends Scene {
         const white = hex_color("#ffffff");
         const blue = hex_color("#1738B7");
         
-        
-        cubetransform = cubetransform.times(Mat4.rotation(Math.PI/23,1,0,0)).times(Mat4.translation(0.5, 2, 21)).times(Mat4.scale(.1,.1,3))
 
-         //let flag = 0;
          if(this.rocket_contact==1){
          if (this.vproj(this.u, t-this.contact_time-this.delay)>0)
          {
              this.shapes.rocket.draw(context, program_state, rocket_matrix, this.materials.matp3);
-             //this.flag=1;
          }
          else if(this.explosion_flag==0)
          {
@@ -421,10 +435,10 @@ export class Assignment extends Scene {
 
         this.shapes.cube.draw(context, program_state, cubetransform, this.materials.matp1);
 
-        let cube_pos = vec3(cubetransform[0][3],cubetransform[1][3],cubetransform[2][3]);
+
         let rocket_pos = vec3(rocket_matrix[0][3],rocket_matrix[1][3],rocket_matrix[2][3]);
 
-        if(distance_between(cube_pos,rocket_pos)<0.5 && this.r_flag==0)
+        if(distance_between(cube_pos,rocket_pos)<0.7 && this.r_flag==0)
         {
             this.rocket_contact=1;
             this.contact_time = t;
@@ -463,26 +477,17 @@ export class Assignment extends Scene {
 
              program_state.camera_inverse = this.attached().map((x,i) => Vector.from(program_state.camera_inverse[i]).mix(x, 0.1));
         }
-        //model_transform = Mat4.identity()
-        //model_transform = model_transform.times(Mat4.translation(10,5,10)).times(Mat4.scale(1/10,1/10,1/10));
-        //this.sparks[0].trans = model_transform;
-        //this.shapes.sphere.draw(context,program_state,this.sparks[0].trans,this.materials.matp3);
-        //model_transform = Mat4.identity();
-        //model_transform = model_transform.times(Mat4.scale(1/10));
-    
-
-        //console.log(this.contact_time)
 
         if(this.flag==1){
         for(var i = 0; i < 300; i++){
             model_transform = Mat4.identity();
-            model_transform = model_transform.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,7.35,0)).times(Mat4.scale(1/30,1/30,1/30));;       
+            model_transform = model_transform.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,7.35,0)).times(Mat4.scale(1/35,1/35,1/35));;       
             this.sparks[i].position = (this.sparks[i].velocity.times(1)).plus(this.sparks[i].position);
             this.sparks[i].velocity = (this.sparks[i].acceleration.times(0.4*Math.random())).plus(this.sparks[i].velocity);
             this.sparks[i].velocity = (this.sparks[i].velocity).times(0.7)
             model_transform = model_transform.times(Mat4.translation(this.sparks[i].position[0],this.sparks[i].position[1],this.sparks[i].position[2]));
             this.sparks[i].trans = model_transform;
-            if(t-this.firework_time+(7.5*Math.random())>=11.5){
+            if(t-this.firework_time+(7.5*Math.random())>=10){
                 this.sparks[i].life=0;
             }
         }
@@ -744,27 +749,5 @@ class particle
     this.mass=1;
     this.trans=Mat4.identity();
     this.life=1;
-    }
-}
-
-class particle_2
-{
-    constructor(){
-    this.color=vec4(1,0,0,1);
-    this.position=vec3(0,0,0);
-    this.velocity=vec3(8*Math.random(),8,8*Math.random());
-    this.acceleration=vec3(0,-4.9,0);
-    this.mass=1;
-    this.trans=Mat4.identity();
-    this.life=1;
-    }
-}
-
-class Item
-{
-    constructor(x,y,z){
-        this.trans = Mat4.identity();
-        this.trans = this.trans.times(Mat4.translation(x,y,z));
-        this.position = vec3(this.trans[0][3],this.trans[1][3],this.trans[2][3]);
     }
 }
