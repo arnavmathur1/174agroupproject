@@ -72,9 +72,10 @@ export class Assignment extends Scene {
         // constructor(): Scenes begin by populating initial values like the Shapes and Materials they'll need.
         super();
 
-        this.contact_time = 0
-        this.contact_complete = 0
-        this.flag = 0
+        this.contact_time = 0;
+        this.contact_complete = 0;
+        this.flag = 0;
+        this.r_flag = 0;
 
 
         // At the beginning of our program, load one of each of these shape definitions onto the GPU.
@@ -209,7 +210,6 @@ export class Assignment extends Scene {
         let p4matrix = Mat4.identity();
         let moonmatrix = Mat4.identity();
 
-        //let rocket_contact = 0;
 
 
 
@@ -236,9 +236,7 @@ export class Assignment extends Scene {
         sunmatrix = sunmatrix.times(Mat4.scale(sunscaler, sunscaler, sunscaler));
          
 
-        this.contact_time = 0;
-        this.contact_complete = 0;
-        //this.sproj(14,t-contact_time-8)
+
        
 
 
@@ -246,7 +244,7 @@ export class Assignment extends Scene {
         {
         rocket_matrix = Mat4.identity();
         rocket_matrix = rocket_matrix.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,this.sproj(14,t-this.contact_time-2),0));
-        contact_complete = 1;
+        this.contact_complete = 1;
 
         }
         else
@@ -283,17 +281,17 @@ export class Assignment extends Scene {
         
         cubetransform = cubetransform.times(Mat4.rotation(Math.PI/23,1,0,0)).times(Mat4.translation(0.5, 2, 21)).times(Mat4.scale(.1,.1,3))
 
-         let flag = 0;
+         //let flag = 0;
          if(this.rocket_contact==1){
-         if (this.vproj(14, t-contact_time-2)>0)
+         if (this.vproj(14, t-this.contact_time-2)>0)
          {
              this.shapes.sphere.draw(context, program_state, rocket_matrix, this.materials.matp3);
-             //flag =1;
+             //this.flag=1;
              //console.log(this.vproj(14, t-2))
          }
          else
          {
-             flag=1;
+             this.flag=1;
          }
          }
          else{
@@ -354,7 +352,7 @@ export class Assignment extends Scene {
         //model_transform = model_transform.times(Mat4.scale(1/10));
 
 
-        if(flag==1){
+        if(this.flag==1){
         for(var i = 0; i < 300; i++){
             model_transform = Mat4.identity();
             model_transform = model_transform.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,10,0)).times(Mat4.scale(1/40,1/40,1/40));;       
@@ -368,7 +366,7 @@ export class Assignment extends Scene {
             }
         }
         
-        console.log(this.contact_time)
+
 
         for(var i = 0; i < 300; i++){
         if(this.sparks[i].life){
