@@ -240,11 +240,12 @@ export class Assignment extends Scene {
        
 
 
-        if(this.rocket_contact==1 && this.contact_complete==0)
+        if(this.rocket_contact==1)
         {
         rocket_matrix = Mat4.identity();
-        rocket_matrix = rocket_matrix.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,this.sproj(14,t-this.contact_time-2),0));
+        rocket_matrix = rocket_matrix.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,this.sproj(14,t-this.contact_time),0));
         this.contact_complete = 1;
+        console.log(t-this.contact_time)
 
         }
         else
@@ -350,7 +351,9 @@ export class Assignment extends Scene {
         //this.shapes.sphere.draw(context,program_state,this.sparks[0].trans,this.materials.matp3);
         //model_transform = Mat4.identity();
         //model_transform = model_transform.times(Mat4.scale(1/10));
+    
 
+        //console.log(this.contact_time)
 
         if(this.flag==1){
         for(var i = 0; i < 300; i++){
