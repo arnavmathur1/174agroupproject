@@ -14,6 +14,10 @@ let ihat = vec3(1, 0, 0);
 let khat = vec3(0, 0, 1);
 let z_rot = 0;
 
+function distance_between(a,b){
+    return (Math.sqrt( ((a[0]-b[0])*(a[0]-b[0])) + ((a[2]-b[2])*(a[2]-b[2])) ))
+
+}
 
 const wm = class worldmovement extends defs.Movement_Controls
 {
@@ -144,7 +148,6 @@ export class Assignment extends Scene {
             this.sparks2.push(new particle());
         }
 
-        this.Rocket = new Item(0,0,0);
         this.rocket_contact = 0;
     }
 
@@ -152,6 +155,7 @@ export class Assignment extends Scene {
         // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
         this.key_triggered_button("Toggle between Night and Day", ["n"], () => this.night = !this.night);
         this.new_line();
+        this.Rocket = new Item(...origin_relative);
     }
 
     sproj(u,t)
@@ -226,13 +230,18 @@ export class Assignment extends Scene {
         sunmatrix = sunmatrix.times(Mat4.scale(sunscaler, sunscaler, sunscaler));
          
 
-
+        let contact_time = 0;
+        let contact_complete = 0;
+        //this.sproj(14,t-contact_time-8)
        
 
 
-        if(this.rocket_contact==1)
+        if(this.rocket_contact==1 && contact_complete==0)
         {
-        rocket_matrix = rocket_matrix.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,this.sproj(14,t-2),0));
+        rocket_matrix = Mat4.identity();
+        rocket_matrix = rocket_matrix.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,1,0));
+        contact_complete = 1;
+
         }
         else
         {
@@ -255,6 +264,7 @@ export class Assignment extends Scene {
 
 
 
+
         const light_position = vec4(0,0, 0 , 1);
         let light = [new Light(light_position, color(1,  0.5 + 0.5*Math.sin(1/5 * Math.PI * t),  0.5 + 0.5*Math.sin(1/5 * Math.PI * t),1), 10 **sunscaler)]
         program_state.lights = light;
@@ -269,9 +279,10 @@ export class Assignment extends Scene {
 
          let flag = 0;
          if(this.rocket_contact==1){
-         if (this.vproj(14, t-2)>0)
+         if (this.vproj(14, t-contact_time-8)>0)
          {
              this.shapes.sphere.draw(context, program_state, rocket_matrix, this.materials.matp3);
+             flag =1;
              //console.log(this.vproj(14, t-2))
          }
          else
@@ -286,6 +297,18 @@ export class Assignment extends Scene {
         //this.shapes.sphere.draw(context, program_state, p3matrix, this.materials.matp3);
 
         this.shapes.cube.draw(context, program_state, cubetransform, this.materials.matp1);
+
+        let cube_pos = vec3(cubetransform[0][3],cubetransform[1][3],cubetransform[2][3]);
+        let rocket_pos = vec3(rocket_matrix[0][3],rocket_matrix[1][3],rocket_matrix[2][3]);
+
+        let r_flag = 0;
+        if(distance_between(cube_pos,rocket_pos)<0.5 && r_flag==0)
+        {
+            this.rocket_contact=1;
+            contact_time = t;
+            r_flag = 1;
+
+        }
 
         let ground_t = Mat4.identity().times(Mat4.translation(...origin_relative))
                                       .times(Mat4.rotation(z_rot, 0, 1, 0))
@@ -616,7 +639,7 @@ class Item
 {
     constructor(x,y,z){
         this.trans = Mat4.identity();
-        this.trans = this.trans.times(Mat4.translation(...origin_relative)).times(Mat4.translation(x,y,z));
+        this.trans = this.trans.times(Mat4.translation(x,y,z));
         this.position = vec3(this.trans[0][3],this.trans[1][3],this.trans[2][3]);
     }
 }
