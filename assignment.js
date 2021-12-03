@@ -283,7 +283,7 @@ export class Assignment extends Scene {
          if (this.vproj(14, t-contact_time-2)>0)
          {
              this.shapes.sphere.draw(context, program_state, rocket_matrix, this.materials.matp3);
-             flag =1;
+             //flag =1;
              //console.log(this.vproj(14, t-2))
          }
          else
