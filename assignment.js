@@ -264,6 +264,9 @@ export class Assignment extends Scene {
         this.spinner_1_flag=0;
         this.spinner_2_flag=0;
         this.spinner_3_flag=0;
+
+        this.fire = new Audio ('Fire.mp3');
+        this.explosion = new Audio ('Explosion.mp3');
     }
 
     make_control_panel() {
@@ -379,6 +382,7 @@ export class Assignment extends Scene {
         if(distance_between(cube_pos,spinner_1_pos)<0.9)
         {
             this.spinner_1_flag=1;
+            this.fire.play();
         }
 
         let ringsmatrix4 = Mat4.identity();
@@ -398,6 +402,7 @@ export class Assignment extends Scene {
         if(distance_between(cube_pos,spinner_2_pos)<0.9)
         {
             this.spinner_2_flag=1;
+            this.fire.play();
         }
           
         this.shapes.torus.draw(context, program_state, ringsmatrix0, this.materials.ring2);
@@ -426,6 +431,8 @@ export class Assignment extends Scene {
              this.firework_time=t;
              this.flag=1;
              this.explosion_flag=1;
+             this.explosion.play();
+             this.fire.play();
          }
          }
          else{
@@ -443,6 +450,7 @@ export class Assignment extends Scene {
             this.rocket_contact=1;
             this.contact_time = t;
             this.r_flag = 1;
+            this.fire.play();
 
         }
 
