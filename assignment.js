@@ -149,6 +149,7 @@ export class Assignment extends Scene {
         }
 
         this.rocket_contact = 0;
+        this.r_flag=0;
     }
 
     make_control_panel() {
@@ -239,7 +240,7 @@ export class Assignment extends Scene {
         if(this.rocket_contact==1 && contact_complete==0)
         {
         rocket_matrix = Mat4.identity();
-        rocket_matrix = rocket_matrix.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,1,0));
+        rocket_matrix = rocket_matrix.times(Mat4.translation(...origin_relative)).times(Mat4.translation(0,this.sproj(14,t-contact_time-2),0));
         contact_complete = 1;
 
         }
@@ -279,7 +280,7 @@ export class Assignment extends Scene {
 
          let flag = 0;
          if(this.rocket_contact==1){
-         if (this.vproj(14, t-contact_time-8)>0)
+         if (this.vproj(14, t-contact_time-2)>0)
          {
              this.shapes.sphere.draw(context, program_state, rocket_matrix, this.materials.matp3);
              flag =1;
@@ -301,12 +302,11 @@ export class Assignment extends Scene {
         let cube_pos = vec3(cubetransform[0][3],cubetransform[1][3],cubetransform[2][3]);
         let rocket_pos = vec3(rocket_matrix[0][3],rocket_matrix[1][3],rocket_matrix[2][3]);
 
-        let r_flag = 0;
-        if(distance_between(cube_pos,rocket_pos)<0.5 && r_flag==0)
+        if(distance_between(cube_pos,rocket_pos)<0.5 && this.r_flag==0)
         {
             this.rocket_contact=1;
             contact_time = t;
-            r_flag = 1;
+            this.r_flag = 1;
 
         }
 
